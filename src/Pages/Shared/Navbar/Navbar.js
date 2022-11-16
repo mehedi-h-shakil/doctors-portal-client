@@ -1,8 +1,24 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthProvider/AuthProvider";
 
 const Navbar = () => {
+  const [theme, setTheme] = useState("light");
+  const element = document.documentElement;
+
+  useEffect(() => {
+    switch (theme) {
+      case "dark":
+        element.classList.add("dark");
+        break;
+      case "light":
+        element.classList.remove("dark");
+        break;
+      default:
+        break;
+    }
+  }, [theme]);
+
   const { user, logOut } = useContext(AuthContext);
   const handleLogOut = () => {
     logOut()
@@ -35,12 +51,30 @@ const Navbar = () => {
           <Link to="/login">Login</Link>
         </li>
       )}
+      <li>
+        {theme === "dark" ? (
+          <button
+            onClick={() => setTheme("light")}
+            className="text-xl leading-9 rounded-full m-1 text-sky-600"
+          >
+            <ion-icon name="sunny"></ion-icon>
+          </button>
+        ) : (
+          <button
+            onClick={() => setTheme("dark")}
+            className="text-xl leading-9 rounded-full m-1 
+              text-sky-600"
+          >
+            <ion-icon name="moon"></ion-icon>
+          </button>
+        )}
+      </li>
     </React.Fragment>
   );
 
   return (
-    <div>
-      <div className="navbar bg-base-100 flex justify-between">
+    <div className="p-5">
+      <div className="navbar bg-base-100 flex justify-between dark:text-gray-100 dark:bg-slate-900 duration-100">
         <div className="navbar-start">
           <div className="dropdown">
             <label tabIndex={0} className="btn btn-ghost lg:hidden">
