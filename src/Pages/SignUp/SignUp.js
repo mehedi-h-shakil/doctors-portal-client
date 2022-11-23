@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider/AuthProvider";
 import toast from "react-hot-toast";
+import SocialLogin from "../SocialLogin/SocialLogin";
+import useToken from "../../hooks/useToken";
 
 const SignUp = () => {
   const {
@@ -14,8 +16,14 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const { createUser, updateUser } = useContext(AuthContext);
+  const [createUserEmail, setCreatedUserEmail] = useState("");
+  const [token] = useToken(createUserEmail);
 
   const [signupError, setSignupError] = useState("");
+
+  if (token) {
+    navigate("/");
+  }
 
   const handleSignup = (data) => {
     console.log(data);
@@ -30,7 +38,7 @@ const SignUp = () => {
         };
         updateUser(userInfo)
           .then(() => {
-            navigate("/");
+            saveUser(data.name, data.email);
           })
           .catch((err) => console.log(err));
       })
@@ -39,9 +47,25 @@ const SignUp = () => {
         setSignupError(err.message);
       });
   };
+
+  const saveUser = (name, email) => {
+    const user = { name, email };
+    fetch("https://doctors-portal-server-omega.vercel.app/users", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(user),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setCreatedUserEmail(email);
+      });
+  };
+
   return (
     <div className="flex justify-center items-center lg:min-h-screen">
-      <div className="h-[620px] w-[350px] lg:w-[385px] shadow-xl rounded-xl p-8">
+      <div className="h-[620px] w-[350px] lg:w-[385px] p-8">
         <div>
           <h2 className="text-xl text-center mb-8">Sign Up</h2>
           <form onSubmit={handleSubmit(handleSignup)}>
@@ -125,9 +149,7 @@ const SignUp = () => {
             </small>
           </p>
           <div className="divider">OR</div>
-          <button className="btn btn-outline w-full">
-            CONTINUE WITH GOOGLE
-          </button>
+          <SocialLogin setSignupError={setSignupError}></SocialLogin>
         </div>
       </div>
     </div>

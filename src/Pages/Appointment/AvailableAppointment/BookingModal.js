@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { AuthContext } from "../../../contexts/AuthProvider/AuthProvider";
 
 const BookingModal = ({ treatment, setTreatment, selectedDate, refetch }) => {
-  const { name, slots } = treatment;
+  const { name, slots, price } = treatment;
   const date = format(selectedDate, "PP");
   const createdAppointment = new Date();
   const { user } = useContext(AuthContext);
@@ -24,10 +24,11 @@ const BookingModal = ({ treatment, setTreatment, selectedDate, refetch }) => {
       appointmentTime: slot,
       phone,
       email,
+      price,
       createdAppointmentDate: createdAppointment,
     };
 
-    fetch("http://localhost:5000/bookings", {
+    fetch("https://doctors-portal-server-omega.vercel.app/bookings", {
       method: "POST",
       headers: {
         "content-type": "application/json",
